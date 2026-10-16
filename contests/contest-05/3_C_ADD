@@ -1,0 +1,119 @@
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+        self.h = 1
+
+def exists(root, x):
+        current = root
+
+        while current is not None:
+            if current.key == x:
+                return True
+
+            if x < current.key:
+                current = current.left
+            else:
+                current = current.right
+
+        return False
+
+def height(root):
+        if root is None:
+            return 0
+        return root.h
+
+
+def update_height(root):
+        root.h = 1 + max(height(root.left), height(root.right))
+
+def balance(root):
+        return height(root.right) - height(root.left)
+
+def rotate_left(a):
+        b = a.right
+        a.right = b.left
+        b.left = a
+
+        update_height(a)
+        update_height(b)
+
+        return b
+
+def rotate_right(a):
+        b = a.left
+        a.left = b.right
+        b.right = a
+
+        update_height(a)
+        update_height(b)
+
+        return b
+    
+def rebalance(root):
+        update_height(root)
+
+        b = balance(root)
+
+        if b == 2:
+            if balance(root.right) < 0:
+                root.right = rotate_right(root.right)
+            return rotate_left(root)
+
+        if b == -2:
+            if balance(root.left) > 0:
+                root.left = rotate_left(root.left)
+            return rotate_right(root)
+
+        return root
+
+def add(root, x):
+        if root is None:
+            return Node(x)
+
+        if x < root.key:
+            root.left = add(root.left, x)
+        elif x > root.key:
+            root.right = add(root.right, x)
+        else:
+            return root
+
+        return rebalance(root)
+def preorder(root):
+    if root is None:
+        return
+
+    print(root.key, end=" ")
+    preorder(root.left)
+    preorder(root.right)
+
+Q = int(input())
+root = None
+
+for _ in range(Q):
+    command = input().split()
+
+    if command[0] == "add":
+        x = int(command[1])
+        root = add(root, x)
+
+    elif command[0] == "exists":
+        x = int(command[1])
+        print("YES" if exists(root, x) else "NO")
+
+    elif command[0] == "root":
+        if root is None:
+            print("Empty")
+        else:
+            print(root.key)
+
+    elif command[0] == "height":
+        print(height(root))
+
+    elif command[0] == "print":
+        if root is None:
+            print("Empty")
+        else:
+            preorder(root)
+            print()

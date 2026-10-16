@@ -1,0 +1,87 @@
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+
+
+def add(root, x):
+    if root is None:
+        return Node(x)
+
+    current = root
+
+    while True:
+        if x == current.key:
+            return root
+
+        if x < current.key:
+            if current.left is None:
+                current.left = Node(x)
+                return root
+            else:
+                current = current.left
+        else:
+            if current.right is None:
+                current.right = Node(x)
+                return root
+            else:
+                current = current.right
+
+
+def rotate_left(a):
+    b = a.right
+    a.right = b.left
+    b.left = a
+    return b
+
+
+def rotate_right(a):
+    b = a.left
+    a.left = b.right
+    b.right = a
+    return b
+
+
+def rotate(root, x, direction):
+    if root.key == x:
+        if direction == "left":
+            return rotate_left(root)
+        else:
+            return rotate_right(root)
+
+    if x < root.key:
+        root.left = rotate(root.left, x, direction)
+    else:
+        root.right = rotate(root.right, x, direction)
+
+    return root
+
+
+def preorder(root):
+    if root is None:
+        return
+
+    print(root.key, end=" ")
+    preorder(root.left)
+    preorder(root.right)
+
+
+N = int(input())
+a = list(map(int, input().split()))
+
+root = None
+
+for x in a:
+    root = add(root, x)
+
+M = int(input())
+
+for _ in range(M):
+    direction, x = input().split()
+    x = int(x)
+
+    root = rotate(root, x, direction)
+
+    preorder(root)
+    print()
